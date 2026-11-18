@@ -10,6 +10,15 @@
     <title>金剛般若波羅蜜經 · 誦經功德回向十方法界眾生</title>
     <!-- 動態生成 PWA 桌面蓮花圖示 -->
     <link rel="apple-touch-icon" id="appleTouchIcon">
+    <!-- 讓 Android Chrome 可「安裝應用程式」 -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+    </script>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Google Fonts 思源宋體與思源黑體 -->
