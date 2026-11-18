@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="金剛經背誦">
+    <meta name="theme-color" content="#F7F4EB">
+    <title>金剛般若波羅蜜經 · 誦經功德回向十方法界眾生</title>
+    <!-- 動態生成 PWA 桌面蓮花圖示 -->
+    <link rel="apple-touch-icon" id="appleTouchIcon">
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts 思源宋體與思源黑體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        paper: {
+                            light: '#F7F4EB',
+                            card: '#FCF9F2',
+                            border: '#E5DEC9',
+                            dark: '#1C1917',
+                            darkCard: '#26221F',
+                            darkBorder: '#3D3630'
+                        },
+                        ink: {
+                            light: '#2C241B',
+                            muted: '#6E655A',
+                            dark: '#E7E2D8',
+                            darkMuted: '#A39B8E'
+                        },
+                        sandalwood: {
+                            DEFAULT: '#B8860B',
+                            hover: '#966D08',
+                            light: '#DFC388'
+                        },
+                        cinnabar: {
+                            DEFAULT: '#A63A2A',
+                            hover: '#8A2E20'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 宣紙細微紋理、防止連點縮放與安全區域適配 */
+        html, body {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: #F7F4EB;
+            background-image: radial-gradient(#E5DEC9 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: calc(86px + env(safe-area-inset-bottom));
+        }
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 28px;
+            }
+        }
+        /* 護眼夜間模式：文字全部白色（挖空未翻開的字維持隱藏） */
+        html.dark body,
+        html.dark body *:not(.cloze-blank),
+        html.dark .cloze-blank.revealed,
+        html.dark ::placeholder {
+            color: #FFFFFF !important;
+        }
+        html.dark body {
+            background-color: #1C1917;
+            background-image: radial-gradient(#2E2925 0.5px, transparent 0.5px);
+        }
+
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+
+        /* 挖空色塊動畫與樣式 */
+        .cloze-blank {
+            display: inline-block;
+            min-width: 2.2em;
+            min-height: 1.5em;
+            padding: 0 8px;
+            margin: 2px 3px;
+            border-bottom: 2px solid #B8860B;
+            background-color: rgba(184, 134, 11, 0.14);
+            color: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            vertical-align: baseline;
+        }
+        html.dark .cloze-blank {
+            border-bottom-color: #DFC388;
+            background-color: rgba(223, 195, 136, 0.18);
+        }
+        .cloze-blank:hover {
+            background-color: rgba(184, 134, 11, 0.24);
+        }
+        .cloze-blank.revealed {
+            color: #A63A2A;
+            background-color: rgba(184, 134, 11, 0.16);
+            border-bottom-style: dashed;
+            font-weight: 600;
+        }
+        html.dark .cloze-blank.revealed {
+            color: #DFC388;
+            background-color: rgba(223, 195, 136, 0.22);
+        }
+
+        /* 首字提示模式樣式 */
+        .sentence-block {
+            transition: all 0.2s ease;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin: 4px 0;
+            min-height: 44px;
+        }
+        .sentence-hint-mode {
+            cursor: pointer;
+        }
+        .sentence-hint-mode:hover, .sentence-hint-mode:active {
+            background-color: rgba(184, 134, 11, 0.08);
+        }
+        .sentence-hidden-tail {
+            filter: blur(6px);
+            opacity: 0.2;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .sentence-block.expanded .sentence-hidden-tail {
+            filter: blur(0);
+            opacity: 1;
+            user-select: text;
+        }
+
+        /* 木魚敲擊波紋動畫 */
+        @keyframes rippleExpand {
+            0% { transform: scale(0.95); opacity: 0.85; }
+            100% { transform: scale(1.45); opacity: 0; }
+        }
+        .mokugyo-ripple {
+            animation: rippleExpand 0.6s ease-out forwards;
+        }
+        @keyframes mokugyoHit {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.91); }
+            70% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+        .mokugyo-active {
+            animation: mokugyoHit 0.22s ease-out;
+        }
+
+        /* 蓮花綻放動畫 */
+        @keyframes lotusBloom {
+            0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+            60% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .animate-lotus {
+            animation: lotusBloom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* 自訂捲軸 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(184, 134, 11, 0.3); border-radius: 3px; }
+    </style>
+</head>
+<body class="text-ink-light dark:text-ink-dark font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- 頂部導覽與進度欄 -->
+    <header class="sticky top-0 z-30 pt-safe bg-paper-card/95 dark:bg-paper-darkCard/95 backdrop-blur-md border-b border-paper-border dark:border-paper-darkBorder shadow-xs">
+        <div class="max-w-4xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3">
+            <div class="flex items-center justify-between gap-2">
+                <!-- 左側：目錄抽屜按鈕與經名 -->
+                <div class="flex items-center gap-2">
+                    <button id="openDrawerBtn" class="min-w-[44px] min-h-[44px] px-2.5 rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 transition flex items-center justify-center gap-1.5 text-sandalwood dark:text-sandalwood-light" title="開啟三十二分目錄">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"></path></svg>
+                        <span class="text-base font-medium hidden sm:inline">目錄</span>
+                    </button>
+                    <div>
+                        <h1 class="font-serif font-bold text-base sm:text-lg tracking-wider text-ink-light dark:text-ink-dark leading-tight">金剛般若波羅蜜經</h1>
+                        <p class="text-[11px] text-ink-muted dark:text-ink-darkMuted">誦經功德回向十方法界眾生</p>
+                    </div>
+                </div>
+
+                <!-- 右側：本機紀錄/備份、加入桌面、字體大小、夜間模式 -->
+                <div class="flex items-center gap-1 sm:gap-2">
+                    <!-- 加入手機主畫面引導按鈕 -->
+                    <button id="pwaGuideBtn" class="min-w-[44px] min-h-[44px] px-2 rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 text-sm font-medium text-sandalwood dark:text-sandalwood-light transition flex items-center justify-center gap-1" title="加入手機主畫面">
+                        <span class="text-lg">📲</span>
+                        <span class="hidden md:inline">加到桌面</span>
+                    </button>
+
+                    <!-- 本機紀錄與進度備份碼按鈕 -->
+                    <button id="backupModalBtn" class="min-h-[44px] px-2.5 rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 transition flex items-center gap-1.5 text-sm font-medium" title="本機儲存狀態與進度備份碼">
+                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        <span class="text-ink-light dark:text-ink-dark">紀錄</span>
+                    </button>
+
+                    <!-- 字體大小切換 -->
+                    <button id="fontSizeBtn" class="min-w-[44px] min-h-[44px] rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 text-base font-serif font-bold text-ink-light dark:text-ink-dark transition flex items-center justify-center" title="調整經文字體大小">
+                        字<span id="fontSizeLabel" class="text-xs ml-0.5 text-cinnabar dark:text-sandalwood-light">偏大</span>
+                    </button>
+
+                    <!-- 夜間護眼模式 -->
+                    <button id="themeToggleBtn" class="min-w-[44px] min-h-[44px] rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 text-sandalwood dark:text-sandalwood-light transition flex items-center justify-center" title="切換護眼夜間模式">
+                        <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 總進度條 -->
+            <div class="mt-2 flex items-center gap-3">
+                <div class="flex-1 h-2 bg-paper-border/70 dark:bg-paper-darkBorder rounded-full overflow-hidden">
+                    <div id="overallProgressBar" class="h-full bg-gradient-to-r from-sandalwood to-cinnabar transition-all duration-500 rounded-full" style="width: 0%"></div>
+                </div>
+                <span class="text-xs font-medium text-ink-muted dark:text-ink-darkMuted whitespace-nowrap">
+                    已熟背 <strong id="completedCount" class="text-cinnabar dark:text-sandalwood-light">0</strong> / 32 分 · 連誦 <strong id="streakCount" class="text-sandalwood dark:text-sandalwood-light">0</strong> 天
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-5 space-y-4 sm:space-y-5">
+
+        <!-- 分品切換與三階段背誦模式卡片 -->
+        <section class="bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder rounded-2xl p-3.5 sm:p-5 shadow-xs">
+            <div class="flex items-center justify-between gap-2">
+                <button id="prevChapterBtn" class="min-w-[44px] min-h-[44px] rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 disabled:opacity-30 transition flex items-center justify-center" title="上一分">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                
+                <!-- 快速下拉選單 -->
+                <div class="relative flex-1">
+                    <select id="chapterSelect" class="w-full min-h-[44px] appearance-none bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder rounded-xl pl-3.5 pr-9 py-2 font-serif font-bold text-base sm:text-lg text-ink-light dark:text-ink-dark focus:outline-none focus:ring-2 focus:ring-sandalwood/40 cursor-pointer">
+                        <!-- 由 JS 動態填入三十二分 -->
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-sandalwood dark:text-sandalwood-light">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+
+                <button id="nextChapterBtn" class="min-w-[44px] min-h-[44px] rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 disabled:opacity-30 transition flex items-center justify-center" title="下一分">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+
+            <!-- 本分已熟背狀態提示列 -->
+            <div id="chapterCompletedBanner" class="hidden mt-3 px-3 py-1.5 rounded-xl bg-emerald-700/10 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium items-center justify-between">
+                <span>✓ 本分已標記為熟背圓滿</span>
+                <span class="text-[11px] opacity-80">左右滑動經文可切換分品</span>
+            </div>
+
+            <!-- 三階段背誦輔助模式切換列 -->
+            <div class="mt-3.5 pt-3.5 border-t border-paper-border/70 dark:border-paper-darkBorder">
+                <div class="grid grid-cols-3 gap-1.5 p-1 bg-paper-light dark:bg-paper-dark rounded-xl border border-paper-border/60 dark:border-paper-darkBorder">
+                    <button data-mode="read" class="mode-tab min-h-[44px] px-1.5 rounded-lg text-lg sm:text-xl font-medium transition flex items-center justify-center gap-1.5 bg-sandalwood text-white shadow-xs">
+                        <span>誦讀模式</span>
+                    </button>
+                    <button data-mode="cloze" class="mode-tab min-h-[44px] px-1.5 rounded-lg text-lg sm:text-xl font-medium transition flex items-center justify-center gap-1.5 text-ink-muted dark:text-ink-darkMuted hover:text-ink-light">
+                        <span>挖空練習</span>
+                    </button>
+                    <button data-mode="hint" class="mode-tab min-h-[44px] px-1.5 rounded-lg text-lg sm:text-xl font-medium transition flex items-center justify-center gap-1.5 text-ink-muted dark:text-ink-darkMuted hover:text-ink-light">
+                        <span>首字提示</span>
+                    </button>
+                </div>
+
+                <!-- 語音朗讀控制列 (Web Speech API) -->
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="flex items-center gap-2">
+                        <button id="ttsPlayBtn" class="min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sandalwood hover:bg-sandalwood-hover active:scale-95 text-white text-lg font-medium shadow-xs transition">
+                            <span id="ttsIcon" hidden>🔊</span>
+                            <span id="ttsBtnText">語音領讀</span>
+                        </button>
+                        <button id="ttsStopBtn" class="hidden min-h-[44px] px-3.5 py-2 rounded-xl border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 active:scale-95 text-lg transition">
+                            停止
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- 語速調整 -->
+                        <div class="flex items-center bg-paper-light dark:bg-paper-dark rounded-xl p-1 border border-paper-border dark:border-paper-darkBorder text-sm">
+                            <button data-rate="0.7" class="rate-btn min-h-[36px] px-2.5 rounded-lg text-sm transition">0.7x 慢讀</button>
+                            <button data-rate="1.0" class="rate-btn min-h-[36px] px-2.5 rounded-lg text-sm bg-sandalwood text-white transition">1.0x 正常</button>
+                        </div>
+
+                        <!-- 單段循環 -->
+                        <button id="ttsLoopBtn" class="min-h-[44px] px-3 rounded-xl border border-paper-border dark:border-paper-darkBorder text-base font-medium transition flex items-center gap-1 text-ink-muted dark:text-ink-darkMuted">
+                            <span>循環：關</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 挖空模式專屬控制列 -->
+                <div id="clozeControls" class="hidden mt-3 flex flex-wrap items-center justify-between gap-2 bg-paper-light/80 dark:bg-paper-dark/60 p-2.5 rounded-xl border border-paper-border/60 dark:border-paper-darkBorder">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-xs text-ink-muted dark:text-ink-darkMuted mr-0.5">難度：</span>
+                        <button data-density="0.3" class="density-btn min-h-[38px] px-3 rounded-lg text-sm font-medium bg-sandalwood text-white">簡單</button>
+                        <button data-density="0.6" class="density-btn min-h-[38px] px-3 rounded-lg text-sm font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder">不易</button>
+                        <button data-density="1.0" class="density-btn min-h-[38px] px-3 rounded-lg text-sm font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder">較難</button>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button id="reRollClozeBtn" class="min-h-[38px] px-3 rounded-lg text-base font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 transition">重新出題</button>
+                        <button id="revealAllClozeBtn" class="min-h-[38px] px-3 rounded-lg text-base font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 transition">全顯</button>
+                        <button id="hideAllClozeBtn" class="min-h-[38px] px-3 rounded-lg text-base font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 transition">全藏</button>
+                    </div>
+                </div>
+
+                <!-- 首字提示模式專屬控制列 -->
+                <div id="hintControls" class="hidden mt-3 flex flex-wrap items-center justify-between gap-2 bg-paper-light/80 dark:bg-paper-dark/60 p-2.5 rounded-xl border border-paper-border/60 dark:border-paper-darkBorder">
+                    <span class="text-xs text-ink-muted dark:text-ink-darkMuted">💡 僅顯示每個氣口短句的第一個字，點擊該句展開核對</span>
+                    <div class="flex items-center gap-1.5">
+                        <button id="expandAllSentencesBtn" class="min-h-[38px] px-3 rounded-lg text-sm font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 transition">展開全部</button>
+                        <button id="collapseAllSentencesBtn" class="min-h-[38px] px-3 rounded-lg text-sm font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder hover:bg-sandalwood/10 transition">收合全部</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 經文主顯示區（支援手機左右滑動切換分品） -->
+        <section id="sutraSwipeArea" class="bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder rounded-2xl p-5 sm:p-8 shadow-xs relative touch-pan-y">
+            <!-- 角落古典裝飾線 -->
+            <div class="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-sandalwood/40 rounded-tl-sm pointer-events-none"></div>
+            <div class="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-sandalwood/40 rounded-tr-sm pointer-events-none"></div>
+            <div class="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-sandalwood/40 rounded-bl-sm pointer-events-none"></div>
+            <div class="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-sandalwood/40 rounded-br-sm pointer-events-none"></div>
+
+            <!-- 品名標題 -->
+            <h2 id="chapterHeading" class="font-serif font-bold text-lg sm:text-xl text-center text-cinnabar dark:text-sandalwood-light tracking-widest mb-4 sm:mb-6">
+                法會因由分第一
+            </h2>
+
+            <!-- 純淨無注音繁體宋體經文容器 -->
+            <div id="sutraContent" class="font-serif text-xl sm:text-2xl leading-[2.25] tracking-wider text-ink-light dark:text-ink-dark transition-all">
+                <!-- 由 JS 渲染純淨漢字經文 -->
+            </div>
+
+        </section>
+
+        <!-- 桌面版木魚計數器 & 每日背誦打卡區 -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 木魚誦讀計數器 -->
+            <div class="bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-serif font-bold text-base text-ink-light dark:text-ink-dark">計數</h3>
+                        <button id="resetMokugyoBtn" class="text-sm text-ink-muted hover:text-cinnabar underline py-1 px-1">歸零</button>
+                    </div>
+                    <strong id="totalMokugyoStat" hidden>0</strong>
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-1">
+                        <span class="text-base text-ink-muted">本分已誦：</span>
+                        <span id="mokugyoCount" class="font-serif text-5xl font-bold text-cinnabar dark:text-sandalwood-light">0</span>
+                        <span class="text-base text-ink-muted">/ 目標</span>
+                        <select id="mokugyoTarget" class="min-h-[34px] bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder rounded-lg px-2 py-0.5 text-lg font-medium">
+                            <option value="3">3 遍</option>
+                            <option value="7" selected>7 遍</option>
+                            <option value="21">21 遍</option>
+                        </select>
+                    </div>
+                    <!-- 進度小圓點 -->
+                    <div id="mokugyoDots" class="flex flex-wrap gap-1 pt-1"></div>
+                </div>
+
+                <!-- 木魚敲擊按鈕 -->
+                <div class="relative flex items-center justify-center">
+                    <div id="mokugyoRipple" class="absolute inset-0 rounded-full border-2 border-sandalwood opacity-0 pointer-events-none"></div>
+                    <button id="tapMokugyoBtn" class="w-20 h-20 rounded-full bg-gradient-to-br from-sandalwood to-[#7A5605] text-paper-card shadow-md hover:shadow-lg active:scale-95 transition flex flex-col items-center justify-center border-2 border-sandalwood-light/60 cursor-pointer select-none" title="點擊敲擊木魚">
+                        <svg class="w-9 h-9 text-paper-light" viewBox="0 0 64 64" fill="currentColor">
+                            <path d="M32 12C17.6 12 8 21.5 8 33.5C8 44.5 17.5 52 32 52C46.5 52 56 44.5 56 33.5C56 21.5 46.4 12 32 12ZM32 46C21.2 46 14 40.6 14 33.5C14 25.4 21.2 18 32 18C42.8 18 50 25.4 50 33.5C50 40.6 42.8 46 32 46Z"/>
+                            <path d="M18 34C18 32.3 19.3 31 21 31H38C40.8 31 43 33.2 43 36C43 38.8 40.8 41 38 41C35.8 41 34 39.6 33.3 37.6H21C19.3 37.6 18 36.3 18 34Z"/>
+                        </svg>
+                        <span class="text-sm font-medium tracking-wider mt-0.5 text-paper-light">敲木魚</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 每日背誦完成打卡區 -->
+            <div class="bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder rounded-2xl p-5 shadow-xs flex flex-col justify-center">
+                <div>
+                    <button id="checkInBtn" class="w-full min-h-[50px] py-3 px-5 rounded-xl bg-gradient-to-r from-cinnabar to-cinnabar-hover text-white font-serif font-bold text-xl tracking-wider shadow-sm hover:shadow-md active:scale-98 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span id="checkInBtnLabel">本分已圓滿</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 手機版底部固定單手操作列（上一分、敲木魚、打卡、下一分） -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 pb-safe bg-paper-card/95 dark:bg-paper-darkCard/95 backdrop-blur-md border-t border-paper-border dark:border-paper-darkBorder shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+        <div class="flex items-center justify-between gap-1.5 px-2.5 py-2">
+            <!-- 上一分 -->
+            <button id="mobilePrevBtn" class="min-w-[46px] min-h-[48px] rounded-xl border border-paper-border dark:border-paper-darkBorder active:scale-95 disabled:opacity-30 transition flex items-center justify-center text-ink-light dark:text-ink-dark" title="上一分">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+
+            <!-- 敲木魚 -->
+            <button id="mobileMokugyoBtn" class="flex-1 min-h-[48px] rounded-xl bg-sandalwood/15 dark:bg-sandalwood/25 border border-sandalwood/40 active:scale-95 transition flex items-center justify-center gap-1.5 text-ink-light dark:text-ink-dark font-medium text-base sm:text-lg">
+                <span>木魚 (<strong id="mobileMokugyoCount" class="text-cinnabar dark:text-sandalwood-light">0</strong>)</span>
+            </button>
+
+            <!-- 打卡 -->
+            <button id="mobileCheckInBtn" class="flex-[1.2] min-h-[48px] rounded-xl bg-cinnabar active:scale-95 transition flex items-center justify-center gap-1 text-white font-serif font-bold text-base sm:text-lg shadow-xs">
+                <span id="mobileCheckInLabel">熟背打卡 ✓</span>
+            </button>
+
+            <!-- 下一分 -->
+            <button id="mobileNextBtn" class="min-w-[46px] min-h-[48px] rounded-xl border border-paper-border dark:border-paper-darkBorder active:scale-95 disabled:opacity-30 transition flex items-center justify-center text-ink-light dark:text-ink-dark" title="下一分">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 頁尾 -->
+    <footer class="max-w-4xl w-full mx-auto px-4 py-6 text-center text-xs text-ink-muted dark:text-ink-darkMuted">
+        <p>應無所住而生其心 · 願以此功德 · 莊嚴佛淨土</p>
+    </footer>
+
+    <!-- 三十二分目錄側邊抽屜 -->
+    <div id="drawerBackdrop" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+    <aside id="chapterDrawer" class="fixed top-0 left-0 bottom-0 w-80 max-w-[85vw] pt-safe pb-safe bg-paper-card dark:bg-paper-darkCard border-r border-paper-border dark:border-paper-darkBorder z-50 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+        <div class="p-4 border-b border-paper-border dark:border-paper-darkBorder flex items-center justify-between">
+            <div>
+                <h2 class="font-serif font-bold text-lg text-ink-light dark:text-ink-dark">金剛經三十二分</h2>
+                <p class="text-xs text-ink-muted dark:text-ink-darkMuted">點擊任意分品切換背誦</p>
+            </div>
+            <button id="closeDrawerBtn" class="min-w-[44px] min-h-[44px] rounded-xl hover:bg-sandalwood/10 text-ink-muted flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="drawerList" class="flex-1 overflow-y-auto p-3 space-y-1.5">
+            <!-- 由 JS 填入三十二分目錄 -->
+        </div>
+    </aside>
+
+    <!-- 本機紀錄狀態與進度備份碼彈窗 -->
+    <div id="backupModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-serif font-bold text-lg text-ink-light dark:text-ink-dark flex items-center gap-2">
+                    <span>💾</span><span>本機紀錄與進度備份碼</span>
+                </h3>
+                <button id="closeBackupModalBtn" class="min-w-[40px] min-h-[40px] rounded-xl hover:bg-sandalwood/10 flex items-center justify-center text-ink-muted">✕</button>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder space-y-1.5 text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-ink-muted dark:text-ink-darkMuted">儲存模式：</span>
+                    <span class="font-bold text-emerald-700 dark:text-emerald-400">✓ 免登入 · 手機/電腦本機自動儲存</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-ink-muted dark:text-ink-darkMuted">目前紀錄摘要：</span>
+                    <span id="backupSummaryText" class="font-medium text-ink-light dark:text-ink-dark">已熟背 0 分 · 連誦 0 天</span>
+                </div>
+            </div>
+
+            <p class="text-xs text-ink-muted dark:text-ink-darkMuted leading-relaxed">
+                您的所有背誦進度皆自動儲存在目前這支手機或電腦的瀏覽器中，無需登入任何帳號。若未來要換新手機，可在此複製「進度備份碼」並貼到新手機還原。
+            </p>
+
+            <!-- 匯出備份碼 -->
+            <div class="space-y-1.5">
+                <label class="text-xs font-bold text-ink-light dark:text-ink-dark block">1. 匯出目前進度備份碼：</label>
+                <div class="flex gap-2">
+                    <input id="exportCodeInput" type="text" readonly class="flex-1 bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder rounded-xl px-3 py-2 text-xs text-ink-muted select-all focus:outline-none">
+                    <button id="copyBackupCodeBtn" class="min-h-[40px] px-4 rounded-xl bg-sandalwood hover:bg-sandalwood-hover text-white text-sm font-medium shrink-0 transition">複製備份碼</button>
+                </div>
+            </div>
+
+            <!-- 貼上還原備份碼 -->
+            <div class="space-y-1.5 pt-1 border-t border-paper-border/60 dark:border-paper-darkBorder">
+                <label class="text-xs font-bold text-ink-light dark:text-ink-dark block">2. 貼上備份碼還原進度：</label>
+                <div class="flex gap-2">
+                    <input id="importCodeInput" type="text" placeholder="在此貼上另一台手機複製的備份碼..." class="flex-1 bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder rounded-xl px-3 py-2 text-xs text-ink-light dark:text-ink-dark focus:outline-none focus:ring-2 focus:ring-sandalwood/40">
+                    <button id="restoreBackupCodeBtn" class="min-h-[40px] px-4 rounded-xl bg-cinnabar hover:bg-cinnabar-hover text-white text-sm font-medium shrink-0 transition">還原進度</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加入手機主畫面教學彈窗 -->
+    <div id="pwaGuideModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-serif font-bold text-lg text-ink-light dark:text-ink-dark flex items-center gap-2">
+                    <span>📲</span><span>將金剛經加到手機桌面</span>
+                </h3>
+                <button id="closePwaModalBtn" class="min-w-[40px] min-h-[40px] rounded-xl hover:bg-sandalwood/10 flex items-center justify-center text-ink-muted">✕</button>
+            </div>
+            <p class="text-xs text-ink-muted dark:text-ink-darkMuted leading-relaxed">
+                將本頁面加入手機主畫面後，即可像獨立 APP 一樣全螢幕開啟每日背誦，且所有進度皆自動保留在手機上：
+            </p>
+            <div class="space-y-2.5 text-xs">
+                <div class="p-3 rounded-2xl bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder">
+                    <p class="font-bold text-sandalwood dark:text-sandalwood-light mb-1">🍎 iPhone / iPad (Safari 瀏覽器)</p>
+                    <p class="text-ink-light/90 dark:text-ink-dark/90">點擊底部工具列的「分享」圖示（方框向上箭頭） → 往下滑動點選「加入主畫面」 → 點擊右上角「新增」。</p>
+                </div>
+                <div class="p-3 rounded-2xl bg-paper-light dark:bg-paper-dark border border-paper-border dark:border-paper-darkBorder">
+                    <p class="font-bold text-sandalwood dark:text-sandalwood-light mb-1">🤖 Android 手機 (Chrome 瀏覽器)</p>
+                    <p class="text-ink-light/90 dark:text-ink-dark/90">點擊右上角「⋮」選單圖示 → 點選「加到主畫面」或「安裝應用程式」 → 確認新增。</p>
+                </div>
+            </div>
+            <button id="confirmPwaModalBtn" class="w-full min-h-[44px] rounded-xl bg-sandalwood hover:bg-sandalwood-hover text-white text-base font-medium transition">我知道了</button>
+        </div>
+    </div>
+
+    <!-- 打卡成功蓮花禪意彈窗 -->
+    <div id="celebrationModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-paper-card dark:bg-paper-darkCard border-2 border-sandalwood rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
+            <div class="w-20 h-20 mx-auto rounded-full bg-sandalwood/15 flex items-center justify-center animate-lotus">
+                <svg class="w-12 h-12 text-sandalwood" viewBox="0 0 64 64" fill="currentColor">
+                    <path d="M32 10C26 20 25 30 32 42C39 30 38 20 32 10Z"/>
+                    <path d="M21 16C18 26 21 35 30 43C29 32 26 23 21 16Z" opacity="0.85"/>
+                    <path d="M43 16C46 26 43 35 34 43C35 32 38 23 43 16Z" opacity="0.85"/>
+                    <path d="M12 25C13 35 19 42 29 45C24 36 18 30 12 25Z" opacity="0.7"/>
+                    <path d="M52 25C51 35 45 42 35 45C40 36 46 30 52 25Z" opacity="0.7"/>
+                    <path d="M18 47C23 50 41 50 46 47C40 45 24 45 18 47Z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-xl text-cinnabar dark:text-sandalwood-light">隨喜讚歎 · 背誦圓滿</h3>
+                <p id="modalChapterName" class="text-sm font-medium text-ink-light dark:text-ink-dark mt-1"></p>
+                <p class="text-xs text-ink-muted dark:text-ink-darkMuted mt-2 leading-relaxed">
+                    法喜充滿，智慧增長。進度已自動儲存於本機，是否前往下一分繼續精進？
+                </p>
+            </div>
+            <div class="flex gap-2.5 pt-2">
+                <button id="closeModalBtn" class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl border border-paper-border dark:border-paper-darkBorder text-base font-medium hover:bg-sandalwood/10 transition">
+                    留在本分
+                </button>
+                <button id="modalNextChapterBtn" class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-cinnabar hover:bg-cinnabar-hover text-white text-base font-medium shadow-xs transition">
+                    前往下一分 →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 輕量提示 Toast -->
+    <div id="toastMsg" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-ink-light dark:bg-paper-card text-paper-light dark:text-ink-light text-xs sm:text-sm font-medium shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 whitespace-nowrap">
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * 1. 《金剛般若波羅蜜經》（姚秦三藏法師鳩摩羅什譯）完整三十二分原文資料庫
+         *    純淨繁體漢字呈現，依傳統佛門課誦本氣口斷句，全篇僅使用句號「。」
+         * ============================================================================
+         */
+        const SUTRA_CHAPTERS = [
+            {
+                id: 1,
+                title: "法會因由分第一",
+                text: "如是我聞。一時佛在舍衛國祇樹給孤獨園。與大比丘眾。千二百五十人俱。爾時世尊食時。著衣持缽。入舍衛大城乞食。於其城中。次第乞已。還至本處。飯食訖。收衣缽。洗足已。敷座而坐。"
+            },
+            {
+                id: 2,
+                title: "善現啟請分第二",
+                text: "時長老須菩提。在大眾中。即從座起。偏袒右肩。右膝著地。合掌恭敬。而白佛言。希有世尊。如來善護念諸菩薩。善付囑諸菩薩。世尊。善男子善女人。發阿耨多羅三藐三菩提心。云何應住。云何降伏其心。佛言。善哉善哉。須菩提。如汝所說。如來善護念諸菩薩。善付囑諸菩薩。汝今諦聽。當為汝說。善男子善女人。發阿耨多羅三藐三菩提心。應如是住。如是降伏其心。唯然。世尊。願樂欲聞。"
+            },
+            {
+                id: 3,
+                title: "大乘正宗分第三",
+                text: "佛告須菩提。諸菩薩摩訶薩。應如是降伏其心。所有一切眾生之類。若卵生。若胎生。若濕生。若化生。若有色。若無色。若有想。若無想。若非有想非無想。我皆令入無餘涅槃而滅度之。如是滅度無量無數無邊眾生。實無眾生得滅度者。何以故。須菩提。若菩薩有我相。人相。眾生相。壽者相。即非菩薩。"
+            },
+            {
+                id: 4,
+                title: "妙行無住分第四",
+                text: "復次。須菩提。菩薩於法。應無所住。行於布施。所謂不住色布施。不住聲香味觸法布施。須菩提。菩薩應如是布施。不住於相。何以故。若菩薩不住相布施。其福德不可思量。須菩提。於意云何。東方虛空可思量不。不也。世尊。須菩提。南西北方。四維上下虛空。可思量不。不也。世尊。須菩提。菩薩無住相布施。福德亦復如是不可思量。須菩提。菩薩但應如所教住。"
+            },
+            {
+                id: 5,
+                title: "如理實見分第五",
+                text: "須菩提。於意云何。可以身相見如來不。不也。世尊。不可以身相得見如來。何以故。如來所說身相。即非身相。佛告須菩提。凡所有相。皆是虛妄。若見諸相非相。即見如來。"
+            },
+            {
+                id: 6,
+                title: "正信希有分第六",
+                text: "須菩提白佛言。世尊。頗有眾生。得聞如是言說章句。生實信不。佛告須菩提。莫作是說。如來滅後。後五百歲。有持戒修福者。於此章句能生信心。以此為實。當知是人不於一佛二佛三四五佛而種善根。已於無量千萬佛所種諸善根。聞是章句。乃至一念生淨信者。須菩提。如來悉知悉見。是諸眾生得如是無量福德。何以故。是諸眾生無復我相人相眾生相壽者相。無法相。亦無非法相。何以故。是諸眾生若心取相。即為著我人眾生壽者。若取法相。即著我人眾生壽者。何以故。若取非法相。即著我人眾生壽者。是故不應取法。不應取非法。以是義故。如來常說。汝等比丘。知我說法。如筏喻者。法尚應捨。何況非法。"
+            },
+            {
+                id: 7,
+                title: "無得無說分第七",
+                text: "須菩提。於意云何。如來得阿耨多羅三藐三菩提耶。如來有所說法耶。須菩提言。如我解佛所說義。無有定法。名阿耨多羅三藐三菩提。亦無有定法。如來可說。何以故。如來所說法。皆不可取。不可說。非法。非非法。所以者何。一切賢聖。皆以無為法而有差別。"
+            },
+            {
+                id: 8,
+                title: "依法出生分第八",
+                text: "須菩提。於意云何。若人滿三千大千世界七寶。以用布施。是人所得福德。寧為多不。須菩提言。甚多。世尊。何以故。是福德。即非福德性。是故如來說福德多。若復有人。於此經中。受持乃至四句偈等。為他人說。其福勝彼。何以故。須菩提。一切諸佛。及諸佛阿耨多羅三藐三菩提法。皆從此經出。須菩提。所謂佛法者。即非佛法。是名佛法。"
+            },
+            {
+                id: 9,
+                title: "一相無相分第九",
+                text: "須菩提。於意云何。須陀洹能作是念。我得須陀洹果不。須菩提言。不也。世尊。何以故。須陀洹名為入流。而無所入。不入色聲香味觸法。是名須陀洹。須菩提。於意云何。斯陀含能作是念。我得斯陀含果不。須菩提言。不也。世尊。何以故。斯陀含名一往來。而實無往來。是名斯陀含。須菩提。於意云何。阿那含能作是念。我得阿那含果不。須菩提言。不也。世尊。何以故。阿那含名為不來。而實無不來。是故名阿那含。須菩提。於意云何。阿羅漢能作是念。我得阿羅漢道不。須菩提言。不也。世尊。何以故。實無有法名阿羅漢。世尊。若阿羅漢作是念。我得阿羅漢道。即為著我人眾生壽者。世尊。佛說我得無諍三昧。人中最為第一。是第一離欲阿羅漢。我不作是念。我是離欲阿羅漢。世尊。我若作是念。我得阿羅漢道。世尊則不說須菩提是樂阿蘭那行者。以須菩提實無所行。而名須菩提是樂阿蘭那行。"
+            },
+            {
+                id: 10,
+                title: "莊嚴淨土分第十",
+                text: "佛告須菩提。於意云何。如來昔在燃燈佛所。於法有所得不。不也。世尊。如來在燃燈佛所。於法實無所得。須菩提。於意云何。菩薩莊嚴佛土不。不也。世尊。何以故。莊嚴佛土者。即非莊嚴。是名莊嚴。是故須菩提。諸菩薩摩訶薩。應如是生清淨心。不應住色生心。不應住聲香味觸法生心。應無所住而生其心。須菩提。譬如有人。身如須彌山王。於意云何。是身為大不。須菩提言。甚大。世尊。何以故。佛說非身。是名大身。"
+            },
+            {
+                id: 11,
+                title: "無為福勝分第十一",
+                text: "須菩提。如恒河中所有沙數。如是沙等恒河。於意云何。是諸恒河沙寧為多不。須菩提言。甚多。世尊。但諸恒河尚多無數。何況其沙。須菩提。我今實言告汝。若有善男子善女人。以七寶滿爾所恒河沙數三千大千世界。以用布施。得福多不。須菩提言。甚多。世尊。佛告須菩提。若善男子善女人。於此經中。乃至受持四句偈等。為他人說。而此福德勝前福德。"
+            },
+            {
+                id: 12,
+                title: "尊重正教分第十二",
+                text: "復次。須菩提。隨說是經。乃至四句偈等。當知此處。一切世間天人阿修羅。皆應供養。如佛塔廟。何況有人盡能受持讀誦。須菩提。當知是人。成就最上第一希有之法。若是經典所在之處。即為有佛。若尊重弟子。"
+            },
+            {
+                id: 11,
+                title: "無為福勝分第十一",
+                text: "須菩提。如恒河中所有沙數。如是沙等恒河。於意云何。是諸恒河沙寧為多不。須菩提言。甚多世尊。但諸恒河尚多無數。何況其沙。須菩提。我今實言告汝。若有善男子善女人。以七寶滿爾所恒河沙數三千大千世界。以用布施。得福多不。須菩提言。甚多世尊。佛告須菩提。若善男子善女人。於此經中。乃至受持四句偈等。為他人說。而此福德勝前福德。"
+            },
+            {
+                id: 12,
+                title: "尊重正教分第十二",
+                text: "復次。須菩提。隨說是經。乃至四句偈等。當知此處。一切世間天人阿修羅。皆應供養。如佛塔廟。何況有人盡能受持讀誦。須菩提。當知是人成就最上第一希有之法。若是經典所在之處。即為有佛。若尊重弟子。"
+            },
+            {
+                id: 13,
+                title: "如法受持分第十三",
+                text: "爾時須菩提白佛言。世尊。當何名此經。我等云何奉持。佛告須菩提。是經名為金剛般若波羅蜜。以是名字。汝當奉持。所以者何。須菩提。佛說般若波羅蜜。即非般若波羅蜜。是名般若波羅蜜。須菩提。於意云何。如來有所說法不。須菩提白佛言。世尊。如來無所說。須菩提。於意云何。三千大千世界所有微塵。是為多不。須菩提言。甚多。世尊。須菩提。諸微塵。如來說非微塵。是名微塵。如來說世界。非世界。是名世界。須菩提。於意云何。可以三十二相見如來不。不也。世尊。不可以三十二相得見如來。何以故。如來說三十二相。即是非相。是名三十二相。須菩提。若有善男子善女人。以恒河沙等身命布施。若復有人。於此經中。乃至受持四句偈等。為他人說。其福甚多。"
+            },
+            {
+                id: 14,
+                title: "離相寂滅分第十四",
+                text: "爾時須菩提。聞說是經。深解義趣。涕淚悲泣。而白佛言。希有世尊。佛說如是甚深經典。我從昔來所得慧眼。未曾得聞如是之經。世尊。若復有人得聞是經。信心清淨。即生實相。當知是人。成就第一希有功德。世尊。是實相者。即是非相。是故如來說名實相。世尊。我今得聞如是經典。信解受持不足為難。若當來世。後五百歲。其有眾生。得聞是經。信解受持。是人即為第一希有。何以故。此人無我相。無人相。無眾生相。無壽者相。所以者何。我相即是非相。人相眾生相壽者相即是非相。何以故。離一切諸相。即名諸佛。佛告須菩提。如是如是。若復有人得聞是經。不驚不怖不畏。當知是人甚為希有。何以故。須菩提。如來說第一波羅蜜。即非第一波羅蜜。是名第一波羅蜜。須菩提。忍辱波羅蜜。如來說非忍辱波羅蜜。是名忍辱波羅蜜。何以故。須菩提。如我昔為歌利王割截身體。我於爾時。無我相。無人相。無眾生相。無壽者相。何以故。我於往昔節節支解時。若有我相人相眾生相壽者相。應生瞋恨。須菩提。又念過去於五百世作忍辱仙人。於爾所世。無我相。無人相。無眾生相。無壽者相。是故須菩提。菩薩應離一切相。發阿耨多羅三藐三菩提心。不應住色生心。不應住聲香味觸法生心。應生無所住心。若心有住。即為非住。是故佛說菩薩心。不應住色布施。須菩提。菩薩為利益一切眾生故。應如是布施。如來說一切諸相。即是非相。又說一切眾生。即非眾生。須菩提。如來是真語者。實語者。如語者。不誑語者。不異語者。須菩提。如來所得法。此法無實無虛。須菩提。若菩薩心住於法而行布施。如人入暗。即無所見。若菩薩心不住法而行布施。如人有目。日光明照。見種種色。須菩提。當來之世。若有善男子善女人。能於此經受持讀誦。即為如來。以佛智慧。悉知是人。悉見是人。皆得成就無量無邊功德。"
+            },
+            {
+                id: 15,
+                title: "持經功德分第十五",
+                text: "須菩提。若有善男子善女人。初日分。以恆河沙等身布施。中日分。復以恆河沙等身布施。後日分。亦以恆河沙等身布施。如是無量百千萬億劫。以身布施。若復有人聞此經典。信心不逆。其福勝彼。何況書寫受持讀誦。為人解說。須菩提。以要言之。是經有不可思議。不可稱量。無邊功德。如來為發大乘者說。為發最上乘者說。若有人能受持讀誦。廣為人說。如來悉知是人。悉見是人。皆得成就不可量。不可稱。無有邊。不可思議功德。如是人等。即為荷擔如來阿耨多羅三藐三菩提。何以故。須菩提。若樂小法者。著我見。人見。眾生見。壽者見。即於此經。不能聽受讀誦。為人解說。須菩提。在在處處。若有此經。一切世間天人阿修羅。所應供養。當知此處。即為是塔。皆應恭敬。作禮圍繞。以諸華香。而散其處。"
+            },
+            {
+                id: 16,
+                title: "能淨業障分第十六",
+                text: "復次。須菩提。若善男子善女人。受持讀誦此經。若為人輕賤。是人先世罪業。應墮惡道。以今世人輕賤故。先世罪業。即為消滅。當得阿耨多羅三藐三菩提。須菩提。我念過去無量阿僧祇劫。於燃燈佛前。得值八百四千萬億那由他諸佛。悉皆供養承事無空過者。若復有人。於後末世。能受持讀誦此經。所得功德。於我所供養諸佛功德。百分不及一。千萬億分。乃至算數譬喻所不能及。須菩提。若善男子善女人。於後末世。有受持讀誦此經。所得功德。我若具說者。或有人聞。心即狂亂。狐疑不信。須菩提。當知是經義不可思議。果報亦不可思議。"
+            },
+            {
+                id: 17,
+                title: "究竟無我分第十七",
+                text: "爾時須菩提白佛言。世尊。善男子善女人。發阿耨多羅三藐三菩提心。云何應住。云何降伏其心。佛告須菩提。善男子善女人。發阿耨多羅三藐三菩提心者。當生如是心。我應滅度一切眾生。滅度一切眾生已。而無有一眾生實滅度者。何以故。須菩提。若菩薩有我相。人相。眾生相。壽者相。即非菩薩。所以者何。須菩提。實無有法。發阿耨多羅三藐三菩提心者。須菩提。於意云何。如來於燃燈佛所。有法得阿耨多羅三藐三菩提不。不也。世尊。如我解佛所說義。佛於然燈佛所。無有法。得阿耨多羅三藐三菩提。佛言。如是如是。須菩提。實無有法。如來得阿耨多羅三藐三菩提。須菩提。若有法。如來得阿耨多羅三藐三菩提者。然燈佛即不與我受記。汝於來世。當得作佛。號釋迦牟尼。以實無有法。得阿耨多羅三藐三菩提。是故然燈佛與我授記。作是言。汝於來世。當得作佛。號釋迦牟尼。何以故。如來者。即諸法如義。若有人言。如來得阿耨多羅三藐三菩提。須菩提。實無有法。佛得阿耨多羅三藐三菩提。須菩提。如來所得阿耨多羅三藐三菩提。於是中無實無虛。是故如來說一切法。皆是佛法。須菩提。所言一切法者。即非一切法。是故名一切法。須菩提。譬如人身長大。須菩提言。世尊。如來說人身長大。即為非大身。是名大身。須菩提。菩薩亦如是。若作是言。我當滅度無量眾生。即不名菩薩。何以故。須菩提。實無有法。名為菩薩。是故佛說一切法。無我無人無眾生無壽者。須菩提。若菩薩作是言。我當莊嚴佛土。是不名菩薩。何以故。如來說莊嚴佛土者。即非莊嚴。是名莊嚴。須菩提。若菩薩通達無我法者。如來說名真是菩薩。"
+            },
+            {
+                id: 18,
+                title: "一體同觀分第十八",
+                text: "須菩提。於意云何。如來有肉眼不。如是。世尊。如來有肉眼。須菩提。於意云何。如來有天眼不。如是。世尊。如來有天眼。須菩提。於意云何。如來有慧眼不。如是。世尊。如來有慧眼。須菩提。於意云何。如來有法眼不。如是。世尊。如來有法眼。須菩提。於意云何。如來有佛眼不。如是。世尊。如來有佛眼。須菩提。於意云何。如恒河中所有沙。佛說是沙不。如是。世尊。如來說是沙。須菩提。於意云何。如一恒河中所有沙。有如是沙等恒河。是諸恒河所有沙數佛世界。如是寧為多不。甚多。世尊。佛告須菩提。爾所國土中。所有眾生。若干種心。如來悉知。何以故。如來說諸心皆為非心。是名為心。所以者何。須菩提。過去心不可得。現在心不可得。未來心不可得。"
+            },
+            {
+                id: 19,
+                title: "法界通化分第十九",
+                text: "須菩提。於意云何。若有人滿三千大千世界七寶以用布施。是人以是因緣。得福多不。如是。世尊。此人以是因緣。得福甚多。須菩提。若福德有實。如來不說得福德多。以福德無故。如來說得福德多。"
+            },
+            {
+                id: 17,
+                title: "究竟無我分第十七",
+                text: "爾時須菩提白佛言。世尊。善男子善女人。發阿耨多羅三藐三菩提心。云何應住。云何降伏其心。佛告須菩提。善男子善女人。發阿耨多羅三藐三菩提心者。當生如是心。我應滅度一切眾生。滅度一切眾生已。而無有一眾生實滅度者。何以故。須菩提。若菩薩有我相。人相。眾生相。壽者相。即非菩薩。所以者何。須菩提。實無有法。發阿耨多羅三藐三菩提心者。須菩提。於意云何。如來於燃燈佛所。有法得阿耨多羅三藐三菩提不。不也。世尊。如我解佛所說義。佛於然燈佛所。無有法。得阿耨多羅三藐三菩提。佛言。如是如是。須菩提。實無有法。如來得阿耨多羅三藐三菩提。須菩提。若有法。如來得阿耨多羅三藐三菩提者。然燈佛即不與我受記。汝於來世。當得作佛。號釋迦牟尼。以實無有法。得阿耨多羅三藐三菩提。是故然燈佛與我授記。作是言。汝於來世。當得作佛。號釋迦牟尼。何以故。如來者。即諸法如義。若有人言。如來得阿耨多羅三藐三菩提。須菩提。實無有法。佛得阿耨多羅三藐三菩提。須菩提。如來所得阿耨多羅三藐三菩提。於是中無實無虛。是故如來說一切法。皆是佛法。須菩提。所言一切法者。即非一切法。是故名一切法。須菩提。譬如人身長大。須菩提言。世尊。如來說人身長大。即為非大身。是名大身。須菩提。菩薩亦如是。若作是言。我當滅度無量眾生。即不名菩薩。何以故。須菩提。實無有法。名為菩薩。是故佛說一切法。無我無人無眾生無壽者。須菩提。若菩薩作是言。我當莊嚴佛土。是不名菩薩。何以故。如來說莊嚴佛土者。即非莊嚴。是名莊嚴。須菩提。若菩薩通達無我法者。如來說名真是菩薩。"
+            },
+            {
+                id: 18,
+                title: "一體同觀分第十八",
+                text: "須菩提。於意云何。如來有肉眼不。如是世尊。如來有肉眼。須菩提。於意云何。如來有天眼不。如是世尊。如來有天眼。須菩提。於意云何。如來有慧眼不。如是世尊。如來有慧眼。須菩提。於意云何。如來有法眼不。如是世尊。如來有法眼。須菩提。於意云何。如來有佛眼不。如是世尊。如來有佛眼。須菩提。於意云何。如恒河中所有沙。佛說是沙不。如是世尊。如來說是沙。須菩提。於意云何。如一恒河中所有沙。有如是沙等恒河。是諸恒河所有沙數。佛世界如是。寧為多不。甚多世尊。佛告須菩提。爾所國土中。所有眾生。若干種心。如來悉知。何以故。如來說諸心。皆為非心。是名為心。所以者何。須菩提。過去心不可得。現在心不可得。未來心不可得。"
+            },
+            {
+                id: 19,
+                title: "法界通化分第十九",
+                text: "須菩提。於意云何。若有人滿三千大千世界七寶。以用布施。是人以是因緣。得福多不。如是。世尊。此人以是因緣。得福甚多。須菩提。若福德有實。如來不說得福德多。以福德無故。如來說得福德多。"
+            },
+            {
+                id: 20,
+                title: "離色離相分第二十",
+                text: "須菩提。於意云何。佛可以具足色身見不。不也。世尊。如來不應以具足色身見。何以故。如來說具足色身。即非具足色身。是名具足色身。須菩提。於意云何。如來可以具足諸相見不。不也。世尊。如來不應以具足諸相見。何以故。如來說諸相具足。即非具足。是名諸相具足。"
+            },
+            {
+                id: 21,
+                title: "非說所說分第二十一",
+                text: "須菩提。汝勿謂如來作是念。我當有所說法。莫作是念。何以故。若人言。如來有所說法。即為謗佛。不能解我所說故。須菩提。說法者。無法可說。是名說法。爾時慧命須菩提白佛言。世尊。頗有眾生。於未來世。聞說是法。生信心不。佛言。須菩提。彼非眾生。非不眾生。何以故。須菩提。眾生眾生者。如來說非眾生。是名眾生。"
+            },
+            {
+                id: 22,
+                title: "無法可得分第二十二",
+                text: "須菩提白佛言。世尊。佛得阿耨多羅三藐三菩提。為無所得耶。佛言。如是。如是。須菩提。我於阿耨多羅三藐三菩提。乃至無有少法可得。是名阿耨多羅三藐三菩提。"
+            },
+            {
+                id: 23,
+                title: "淨心行善分第二十三",
+                text: "復次。須菩提。是法平等。無有高下。是名阿耨多羅三藐三菩提。以無我無人無眾生無壽者。修一切善法。即得阿耨多羅三藐三菩提。須菩提。所言善法者。如來說即非善法。是名善法。"
+            },
+            {
+                id: 24,
+                title: "福智無比分第二十四",
+                text: "須菩提。若三千大千世界中。所有諸須彌山王。如是等七寶聚。有人持用布施。若人以此般若波羅蜜經。乃至四句偈等。受持讀誦。為他人說。於前福德。百分不及一。百千萬億分。乃至算數譬喻所不能及。"
+            },
+            {
+                id: 25,
+                title: "化無所化分第二十五",
+                text: "須菩提。於意云何。汝等勿謂如來作是念。我當度眾生。須菩提。莫作是念。何以故。實無有眾生如來度者。若有眾生如來度者。如來即有我人眾生壽者。須菩提。如來說有我者。即非有我。而凡夫之人。以為有我。須菩提。凡夫者。如來說即非凡夫。是名凡夫。"
+            },
+            {
+                id: 26,
+                title: "法身非相分第二十六",
+                text: "須菩提。於意云何。可以三十二相觀如來不。須菩提言。如是如是。以三十二相觀如來。佛言。須菩提。若以三十二相觀如來者。轉輪聖王。即是如來。須菩提白佛言。世尊。如我解佛所說義。不應以三十二相觀如來。爾時世尊而說偈言。若以色見我。以音聲求我。是人行邪道。不能見如來。"
+            },
+            {
+                id: 27,
+                title: "無斷無滅分第二十七",
+                text: "須菩提。汝若作是念。如來不以具足相故。得阿耨多羅三藐三菩提。須菩提。莫作是念。如來不以具足相故。得阿耨多羅三藐三菩提。須菩提。汝若作是念。發阿耨多羅三藐三菩提心者。說諸法斷滅。莫作是念。何以故。發阿耨多羅三藐三菩提心者。於法不說斷滅相。"
+            },
+            {
+                id: 28,
+                title: "不受不貪分第二十八",
+                text: "須菩提。若菩薩以滿恒河沙等世界七寶。持用布施。若復有人。知一切法無我。得成於忍。此菩薩勝前菩薩所得功德。何以故。須菩提。以諸菩薩不受福德故。須菩提白佛言。世尊。云何菩薩不受福德。須菩提。菩薩所作福德。不應貪著。是故說不受福德。"
+            },
+            {
+                id: 29,
+                title: "威儀寂靜分第二十九",
+                text: "須菩提。若有人言。如來若來若去。若坐若臥。是人不解我所說義。何以故。如來者。無所從來。亦無所去。故名如來。"
+            },
+            {
+                id: 30,
+                title: "一合理相分第三十",
+                text: "須菩提。若善男子善女人。以三千大千世界碎為微塵。於意云何。是微塵眾。寧為多不。須菩提言。甚多。世尊。何以故。若是微塵眾實有者。佛即不說是微塵眾。所以者何。佛說微塵眾。即非微塵眾。是名微塵眾。世尊。如來所說三千大千世界。即非世界。是名世界。何以故。若世界實有者。即是一合相。如來說。一合相。即非一合相。是名一合相。須菩提。一合相者。即是不可說。但凡夫之人貪著其事。"
+            },
+            {
+                id: 31,
+                title: "知見不生分第三十一",
+                text: "須菩提。若人言。佛說我見人見眾生見壽者見。須菩提。於意云何。是人解我所說義不。不也。世尊。是人不解如來所說義。何以故。世尊說我見人見眾生見壽者見。即非我見人見眾生見壽者見。是名我見人見眾生見壽者見。須菩提。發阿耨多羅三藐三菩提心者。於一切法。應如是知。如是見。如是信解。不生法相。須菩提。所言法相者。如來說即非法相。是名法相。"
+            },
+            {
+                id: 32,
+                title: "應化非真分第三十二",
+                text: "須菩提。若有人以滿無量阿僧祇世界七寶。持用布施。若有善男子善女人。發菩提心者。持於此經。乃至四句偈等。受持讀誦。為人演說。其福勝彼。云何為人演說。不取於相。如如不動。何以故。一切有為法。如夢幻泡影。如露亦如電。應作如是觀。佛說是經已。長老須菩提。及諸比丘比丘尼。優婆塞優婆夷。一切世間。天人阿修羅。聞佛所說。皆大歡喜。信受奉行。"
+            }
+        ];
+
+        /**
+         * ============================================================================
+         * 2. 免登入本機自動儲存狀態管理 (localStorage) 與備份碼匯出/匯入
+         * ============================================================================
+         */
+        const STORAGE_KEY = "diamond_sutra_local_progress_v2";
+
+        let state = {
+            currentChapter: 1,           // 當前閱讀分品 (1~32)
+            completedChapters: [],       // 已熟背打卡的分品 ID 陣列
+            lastCheckInDate: null,       // 上次打卡日期 YYYY-MM-DD
+            streak: 0,                   // 連續打卡天數
+            mokugyoCounts: {},           // 各分木魚計數 { "1": 3, "2": 0 }
+            mokugyoTarget: 7,            // 目標誦讀遍數
+            mode: "read",                // 'read' | 'cloze' | 'hint'
+            clozeDensity: 0.3,           // 0.3 | 0.6 | 1.0
+            clozeSeed: 1,                // 重新出題隨機種子
+            fontSizeIndex: 1,            // 0: 標準, 1: 偏大, 2: 特大
+            darkMode: false,             // 護眼夜間模式
+            ttsRate: 1.0,                // 語音語速
+            ttsLoop: false               // 單段循環播放
+        };
+
+        function getTodayStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function getYesterdayStr() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function validateStreak() {
+            if (state.lastCheckInDate) {
+                const today = getTodayStr();
+                const yesterday = getYesterdayStr();
+                if (state.lastCheckInDate !== today && state.lastCheckInDate !== yesterday) {
+                    state.streak = 0;
+                }
+            }
+        }
+
+        function loadLocalState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = {
+                        ...state,
+                        ...parsed,
+                        completedChapters: Array.isArray(parsed.completedChapters) ? parsed.completedChapters : [],
+                        mokugyoCounts: parsed.mokugyoCounts || {}
+                    };
+                }
+                validateStreak();
+            } catch (e) {
+                console.warn("讀取本機紀錄異常：", e);
+            }
+        }
+
+        function saveLocalState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    currentChapter: state.currentChapter,
+                    completedChapters: state.completedChapters,
+                    lastCheckInDate: state.lastCheckInDate,
+                    streak: state.streak,
+                    mokugyoCounts: state.mokugyoCounts,
+                    mokugyoTarget: state.mokugyoTarget,
+                    fontSizeIndex: state.fontSizeIndex,
+                    darkMode: state.darkMode
+                }));
+            } catch (e) {
+                console.warn("儲存本機紀錄異常：", e);
+            }
+        }
+
+        // 產生 Base64 進度備份碼（支援 Unicode 編碼安全）
+        function generateBackupCode() {
+            const payload = {
+                v: 2,
+                c: state.currentChapter,
+                done: state.completedChapters,
+                dt: state.lastCheckInDate,
+                st: state.streak,
+                mk: state.mokugyoCounts,
+                tg: state.mokugyoTarget
+            };
+            const jsonStr = JSON.stringify(payload);
+            return btoa(encodeURIComponent(jsonStr));
+        }
+
+        function applyBackupCode(codeStr) {
+            try {
+                const cleaned = codeStr.trim();
+                if (!cleaned) {
+                    showToast("請先貼上進度備份碼");
+                    return false;
+                }
+                const jsonStr = decodeURIComponent(atob(cleaned));
+                const payload = JSON.parse(jsonStr);
+                if (!payload || !Array.isArray(payload.done)) {
+                    showToast("備份碼格式不正確，請確認是否完整複製");
+                    return false;
+                }
+                state.currentChapter = Math.max(1, Math.min(32, Number(payload.c) || 1));
+                state.completedChapters = payload.done;
+                state.lastCheckInDate = payload.dt || null;
+                state.streak = Number(payload.st) || 0;
+                state.mokugyoCounts = payload.mk || {};
+                state.mokugyoTarget = Number(payload.tg) || 7;
+                validateStreak();
+                saveLocalState();
+                populateChapterSelect();
+                renderAll();
+                updateBackupModalInfo();
+                showToast("🎉 進度已成功從備份碼還原並儲存至本機！");
+                return true;
+            } catch (e) {
+                showToast("備份碼解析失敗，請確認貼上的內容是否完整");
+                return false;
+            }
+        }
+
+        function updateBackupModalInfo() {
+            const totalMk = Object.values(state.mokugyoCounts).reduce((sum, v) => sum + (Number(v) || 0), 0);
+            document.getElementById("backupSummaryText").textContent = `已熟背 ${state.completedChapters.length} 分 · 連誦 ${state.streak} 天 · 木魚 ${totalMk} 遍`;
+            document.getElementById("exportCodeInput").value = generateBackupCode();
+        }
+
+        // 動態繪製 PWA 蓮花桌面圖示
+        function setupPWAIcon() {
+            try {
+                const canvas = document.createElement("canvas");
+                canvas.width = 180;
+                canvas.height = 180;
+                const ctx = canvas.getContext("2d");
+                if (!ctx) return;
+                ctx.fillStyle = "#F7F4EB";
+                ctx.fillRect(0, 0, 180, 180);
+                ctx.strokeStyle = "#B8860B";
+                ctx.lineWidth = 6;
+                ctx.strokeRect(12, 12, 156, 156);
+                ctx.fillStyle = "#A63A2A";
+                ctx.font = "bold 46px serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("金剛", 90, 68);
+                ctx.fillStyle = "#2C241B";
+                ctx.font = "bold 36px serif";
+                ctx.fillText("般若經", 90, 118);
+                const link = document.getElementById("appleTouchIcon");
+                if (link) link.href = canvas.toDataURL("image/png");
+            } catch (e) {}
+        }
+
+        /**
+         * ============================================================================
+         * 3. 震動回饋與 Web Audio API 合成木魚聲 / 禪鐘聲
+         * ============================================================================
+         */
+        function triggerHaptic(duration = 25) {
+            if (navigator.vibrate) {
+                try { navigator.vibrate(duration); } catch (e) {}
+            }
+        }
+
+        let audioCtx = null;
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playMokugyoSound() {
+            try {
+                initAudioContext();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+                const oscMain = audioCtx.createOscillator();
+                const gainMain = audioCtx.createGain();
+                oscMain.type = 'sine';
+                oscMain.frequency.setValueAtTime(395, now);
+                oscMain.frequency.exponentialRampToValueAtTime(325, now + 0.08);
+
+                gainMain.gain.setValueAtTime(0.001, now);
+                gainMain.gain.linearRampToValueAtTime(0.65, now + 0.006);
+                gainMain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+                const oscOver = audioCtx.createOscillator();
+                const gainOver = audioCtx.createGain();
+                oscOver.type = 'triangle';
+                oscOver.frequency.setValueAtTime(790, now);
+                oscOver.frequency.exponentialRampToValueAtTime(640, now + 0.05);
+
+                gainOver.gain.setValueAtTime(0.001, now);
+                gainOver.gain.linearRampToValueAtTime(0.28, now + 0.004);
+                gainOver.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(520, now);
+                filter.Q.setValueAtTime(2.2, now);
+
+                oscMain.connect(filter);
+                oscOver.connect(filter);
+                filter.connect(gainMain);
+                gainMain.connect(audioCtx.destination);
+
+                oscMain.start(now);
+                oscOver.start(now);
+                oscMain.stop(now + 0.18);
+                oscOver.stop(now + 0.12);
+            } catch (e) {}
+        }
+
+        function playZenBellSound() {
+            try {
+                initAudioContext();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+                const freqs = [528, 1056, 1584];
+                freqs.forEach((f, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, now);
+
+                    const peak = 0.25 / (idx + 1);
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(peak, now + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0008, now + 2.2 - idx * 0.4);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 2.3);
+                });
+            } catch (e) {}
+        }
+
+        /**
+         * ============================================================================
+         * 4. 純淨繁體漢字排版引擎（僅依句號「。」切句，無注音）
+         * ============================================================================
+         */
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        function seededRandom(seed) {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
+        function renderSutraTextHTML(text) {
+            // 1. 誦讀模式：純淨宋體漢字排版
+            if (state.mode === "read") {
+                return `<p class="indent-8 text-justify">${escapeHTML(text)}</p>`;
+            }
+
+            // 嚴格依句號「。」切分為傳統課誦氣口短句
+            const rawChunks = text.match(/[^。]+。*/g) || [text];
+
+            // 2. 挖空練習模式
+            if (state.mode === "cloze") {
+                let seedCounter = state.currentChapter * 100 + state.clozeSeed * 17;
+                const htmlChunks = rawChunks.map((chunk) => {
+                    const match = chunk.match(/^([^。]+)(。*)$/);
+                    if (!match) return escapeHTML(chunk);
+
+                    const coreText = match[1];
+                    const punct = match[2];
+
+                    const rand = seededRandom(seedCounter++);
+                    const shouldBlank = state.clozeDensity >= 1.0 ? true : (rand < state.clozeDensity);
+
+                    if (!shouldBlank || coreText.length < 2) {
+                        return escapeHTML(coreText) + escapeHTML(punct);
+                    }
+
+                    if (state.clozeDensity >= 0.99 || coreText.length <= 4) {
+                        return `<span class="cloze-blank" onclick="this.classList.toggle('revealed')" title="點擊翻開核對">${escapeHTML(coreText)}</span>${escapeHTML(punct)}`;
+                    } else {
+                        const keepLen = coreText.length > 6 ? 2 : 1;
+                        const head = coreText.slice(0, keepLen);
+                        const tail = coreText.slice(keepLen);
+                        return `${escapeHTML(head)}<span class="cloze-blank" onclick="this.classList.toggle('revealed')" title="點擊翻開核對">${escapeHTML(tail)}</span>${escapeHTML(punct)}`;
+                    }
+                });
+
+                return `<p class="indent-8 text-justify">${htmlChunks.join("")}</p>
+                        <p class="mt-4 text-xs text-center text-ink-muted dark:text-ink-darkMuted font-sans">💡 提示：默背出空白處經文後，點擊色塊即可翻開核對答案</p>`;
+            }
+
+            // 3. 首字提示模式
+            if (state.mode === "hint") {
+                const sentenceHTML = rawChunks.map((sent) => {
+                    const trimmed = sent.trim();
+                    if (!trimmed) return "";
+                    const firstCharMatch = trimmed.match(/^(.)(.*)$/);
+                    if (!firstCharMatch) return `<div>${escapeHTML(trimmed)}</div>`;
+
+                    const firstChar = firstCharMatch[1];
+                    const restChars = firstCharMatch[2];
+
+                    return `<div class="sentence-block sentence-hint-mode" onclick="this.classList.toggle('expanded')" title="點擊展開/收合此句">
+                        <span class="font-bold text-cinnabar dark:text-sandalwood-light">${escapeHTML(firstChar)}</span><span class="sentence-hidden-tail">${escapeHTML(restChars)}</span>
+                    </div>`;
+                }).join("");
+
+                return `<div class="space-y-1">${sentenceHTML}</div>`;
+            }
+        }
+
+        /**
+         * ============================================================================
+         * 5. 語音合成朗讀功能 (Web Speech API zh-TW) - 完整佛門古音發音映射
+         * ============================================================================
+         */
+        let isSpeaking = false;
+
+        function stopTTS() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            isSpeaking = false;
+            updateTTSUI();
+        }
+
+        function startTTS() {
+            if (!('speechSynthesis' in window)) {
+                showToast("您的瀏覽器不支援語音朗讀功能");
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const chapter = SUTRA_CHAPTERS.find(c => c.id === state.currentChapter);
+            if (!chapter) return;
+
+            // 僅在語音引擎發音時映射佛門古音（畫面經文維持正統繁體漢字不變）
+            let speakText = `${chapter.title}。${chapter.text}`
+                .replace(/不也/g, "否也")
+                .replace(/解我/g, "潔我")
+                .replace(/有為/g, "有圍")
+                .replace(/為人演說/g, "魏人演說")
+                .replace(/不動/g, "僕動")
+                .replace(/優婆塞/g, "優婆色")
+                .replace(/如露/g, "如路")
+                .replace(/實有者/g, "實游者")
+                .replace(/以滿/g, "宜滿")
+                .replace(/不解/g, "不潔")
+                .replace(/有我/g, "游我")
+                .replace(/有想/g, "游想")
+                .replace(/長老/g, "掌老")
+                .replace(/如汝/g, "如如")
+                .replace(/大乘/g, "大勝")
+                .replace(/汝等/g, "如等")
+                .replace(/以此/g, "宜此")
+                .replace(/法者/g, "筏者")
+                .replace(/非不眾生/g, "非僕眾生")
+                .replace(/為無所得耶/g, "圍無所得耶")
+                .replace(/皆為/g, "皆圍")
+                .replace(/眼不/g, "鹽否")
+                .replace(/有法/g, "油法")
+                .replace(/信心不逆/g, "信心僕逆")
+                .replace(/為人解說/g, "魏人解說")
+                .replace(/若為人輕賤/g, "若圍人輕賤")
+                .replace(/語者/g, "魚者")
+                .replace(/甚為/g, "甚圍")
+                .replace(/不驚不怖不畏/g, "不驚僕布僕位")
+                .replace(/忍辱/g, "忍入")
+                .replace(/我等/g, "哦等")
+                .replace(/是為/g, "是圍")
+                .replace(/有所說法/g, "油所說法")
+                .replace(/供養/g, "共漾")
+                .replace(/寧為/g, "寧圍")
+                .replace(/有所得/g, "由所德")
+                .replace(/不入/g, "僕入")
+                .replace(/含果/g, "含國")
+                .replace(/阿蘭那行/g, "阿蘭挪橫")
+                .replace(/無諍/g, "無爭")
+                .replace(/願樂欲聞/g, "願藥欲聞")
+                .replace(/樂阿蘭那/g, "藥阿蘭那")
+                .replace(/若樂小法/g, "若藥小法")
+                .replace(/如所教住/g, "如所叫住")
+                .replace(/無為/g, "無圍")
+                .replace(/著/g, "灼")
+                .replace(/耶/g, "爺")
+                .replace(/得/g, "德")
+                .replace(/相/g, "象")
+                .replace(/降伏/g, "祥伏")
+                .replace(/還至/g, "環至")
+                .replace(/還/g, "環")
+                .replace(/般若/g, "波惹")
+                .replace(/阿耨多羅三藐三菩提/g, "阿耨多羅三渺三菩提")
+                .replace(/祇樹/g, "其樹")
+                .replace(/祇園/g, "其園")
+                .replace(/給孤獨園/g, "己孤獨園")
+                .replace(/阿僧祇/g, "阿僧其")
+                .replace(/如筏喻者/g, "如伐喻者")
+                .replace(/偈/g, "計")
+                .replace(/不。/g, "否。")
+                .replace(/不？/g, "否？");
+
+            const utterance = new SpeechSynthesisUtterance(speakText);
+            utterance.lang = 'zh-TW';
+            utterance.rate = state.ttsRate;
+            utterance.pitch = 0.95;
+
+            const voices = window.speechSynthesis.getVoices();
+            const twVoice = voices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh_TW'));
+            if (twVoice) utterance.voice = twVoice;
+
+            utterance.onstart = () => {
+                isSpeaking = true;
+                updateTTSUI();
+            };
+
+            utterance.onend = () => {
+                if (state.ttsLoop && isSpeaking) {
+                    setTimeout(() => {
+                        if (state.ttsLoop && isSpeaking) startTTS();
+                    }, 800);
+                } else {
+                    isSpeaking = false;
+                    updateTTSUI();
+                }
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                updateTTSUI();
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function updateTTSUI() {
+            const playBtn = document.getElementById("ttsPlayBtn");
+            const stopBtn = document.getElementById("ttsStopBtn");
+            const icon = document.getElementById("ttsIcon");
+            const label = document.getElementById("ttsBtnText");
+
+            if (isSpeaking) {
+                icon.textContent = "🎙️";
+                label.textContent = "領讀中...";
+                playBtn.classList.add("ring-2", "ring-sandalwood-light");
+                stopBtn.classList.remove("hidden");
+            } else {
+                icon.textContent = "🔊";
+                label.textContent = "語音領讀";
+                playBtn.classList.remove("ring-2", "ring-sandalwood-light");
+                stopBtn.classList.add("hidden");
+            }
+        }
+
+        /**
+         * ============================================================================
+         * 6. UI 渲染與跨裝置互動事件
+         * ============================================================================
+         */
+        const FONT_CLASSES = [
+            { label: "標準", cls: "text-lg sm:text-xl leading-[2.15]" },
+            { label: "偏大", cls: "text-xl sm:text-2xl leading-[2.3]" },
+            { label: "特大", cls: "text-2xl sm:text-3xl leading-[2.45]" },
+            { label: "極大", cls: "text-3xl sm:text-4xl leading-[2.6]" }
+        ];
+
+        function showToast(msg) {
+            const toast = document.getElementById("toastMsg");
+            toast.textContent = msg;
+            toast.classList.remove("opacity-0");
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.add("opacity-0");
+            }, 2500);
+        }
+
+        function renderAll() {
+            const chapter = SUTRA_CHAPTERS.find(c => c.id === state.currentChapter) || SUTRA_CHAPTERS[0];
+
+            // 1. 主題模式
+            if (state.darkMode) {
+                document.documentElement.classList.add("dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+            }
+
+            // 2. 頂部統計與進度條
+            const completedNum = state.completedChapters.length;
+            document.getElementById("completedCount").textContent = completedNum;
+            document.getElementById("streakCount").textContent = state.streak;
+            const pct = Math.round((completedNum / 32) * 100);
+            document.getElementById("overallProgressBar").style.width = `${pct}%`;
+
+            // 3. 字體大小
+            const fontConfig = FONT_CLASSES[state.fontSizeIndex] || FONT_CLASSES[1];
+            document.getElementById("fontSizeLabel").textContent = fontConfig.label;
+            const sutraContainer = document.getElementById("sutraContent");
+            sutraContainer.className = `font-serif tracking-wider text-ink-light dark:text-ink-dark transition-all ${fontConfig.cls}`;
+
+            // 4. 分品標題、下拉選單與上下分按鈕（含手機底部列按鈕）
+            document.getElementById("chapterHeading").textContent = chapter.title;
+            document.getElementById("chapterSelect").value = chapter.id;
+            const isFirst = chapter.id <= 1;
+            const isLast = chapter.id >= 32;
+            document.getElementById("prevChapterBtn").disabled = isFirst;
+            document.getElementById("nextChapterBtn").disabled = isLast;
+            document.getElementById("mobilePrevBtn").disabled = isFirst;
+            document.getElementById("mobileNextBtn").disabled = isLast;
+
+            // 5. 本分完成狀態與打卡按鈕
+            const isCompleted = state.completedChapters.includes(chapter.id);
+            const banner = document.getElementById("chapterCompletedBanner");
+            const checkInBtn = document.getElementById("checkInBtn");
+            const checkInLabel = document.getElementById("checkInBtnLabel");
+            const mobileCheckInBtn = document.getElementById("mobileCheckInBtn");
+            const mobileCheckInLabel = document.getElementById("mobileCheckInLabel");
+
+            if (isCompleted) {
+                banner.classList.remove("hidden");
+                banner.classList.add("flex");
+                checkInLabel.textContent = "本分已圓滿✓（再次點擊可取消）";
+                checkInBtn.classList.remove("from-cinnabar", "to-cinnabar-hover");
+                checkInBtn.classList.add("from-emerald-700", "to-emerald-800");
+
+                mobileCheckInLabel.textContent = "已熟背 ✓";
+                mobileCheckInBtn.classList.remove("bg-cinnabar");
+                mobileCheckInBtn.classList.add("bg-emerald-700");
+            } else {
+                banner.classList.add("hidden");
+                banner.classList.remove("flex");
+                checkInLabel.textContent = "本分已圓滿";
+                checkInBtn.classList.add("from-cinnabar", "to-cinnabar-hover");
+                checkInBtn.classList.remove("from-emerald-700", "to-emerald-800");
+
+                mobileCheckInLabel.textContent = "熟背打卡 ✓";
+                mobileCheckInBtn.classList.add("bg-cinnabar");
+                mobileCheckInBtn.classList.remove("bg-emerald-700");
+            }
+
+            // 6. 三階段模式 Tab 與控制列
+            document.querySelectorAll(".mode-tab").forEach(btn => {
+                if (btn.dataset.mode === state.mode) {
+                    btn.className = "mode-tab min-h-[44px] px-1.5 rounded-lg text-lg sm:text-xl font-medium transition flex items-center justify-center gap-1.5 bg-sandalwood text-white shadow-xs";
+                } else {
+                    btn.className = "mode-tab min-h-[44px] px-1.5 rounded-lg text-lg sm:text-xl font-medium transition flex items-center justify-center gap-1.5 text-ink-muted dark:text-ink-darkMuted hover:text-ink-light dark:hover:text-ink-dark";
+                }
+            });
+
+            document.getElementById("clozeControls").classList.toggle("hidden", state.mode !== "cloze");
+            document.getElementById("hintControls").classList.toggle("hidden", state.mode !== "hint");
+
+            document.querySelectorAll(".density-btn").forEach(btn => {
+                if (parseFloat(btn.dataset.density) === state.clozeDensity) {
+                    btn.className = "density-btn min-h-[38px] px-3 rounded-lg text-sm font-medium bg-sandalwood text-white";
+                } else {
+                    btn.className = "density-btn min-h-[38px] px-3 rounded-lg text-sm font-medium bg-paper-card dark:bg-paper-darkCard border border-paper-border dark:border-paper-darkBorder";
+                }
+            });
+
+            // 7. 渲染純淨漢字經文主體
+            sutraContainer.innerHTML = renderSutraTextHTML(chapter.text);
+
+            // 8. 木魚計數器（本分遍數與全經累計遍數）
+            const count = state.mokugyoCounts[chapter.id] || 0;
+            const totalCount = Object.values(state.mokugyoCounts).reduce((sum, val) => sum + (Number(val) || 0), 0);
+            document.getElementById("mokugyoCount").textContent = count;
+            document.getElementById("mobileMokugyoCount").textContent = count;
+            document.getElementById("totalMokugyoStat").textContent = totalCount;
+            document.getElementById("mokugyoTarget").value = state.mokugyoTarget;
+            renderMokugyoDots(count, state.mokugyoTarget);
+
+            // 9. TTS 語速與循環狀態
+            document.querySelectorAll(".rate-btn").forEach(btn => {
+                if (parseFloat(btn.dataset.rate) === state.ttsRate) {
+                    btn.className = "rate-btn min-h-[36px] px-2.5 rounded-lg text-sm bg-sandalwood text-white transition";
+                } else {
+                    btn.className = "rate-btn min-h-[36px] px-2.5 rounded-lg text-sm transition text-ink-muted dark:text-ink-darkMuted";
+                }
+            });
+
+            const loopBtn = document.getElementById("ttsLoopBtn");
+            if (state.ttsLoop) {
+                loopBtn.innerHTML = "<span>循環：開</span>";
+                loopBtn.className = "min-h-[44px] px-3 rounded-xl border border-sandalwood bg-sandalwood/15 text-sandalwood dark:text-sandalwood-light text-base font-medium transition flex items-center gap-1";
+            } else {
+                loopBtn.innerHTML = "<span>循環：關</span>";
+                loopBtn.className = "min-h-[44px] px-3 rounded-xl border border-paper-border dark:border-paper-darkBorder text-base font-medium transition flex items-center gap-1 text-ink-muted dark:text-ink-darkMuted";
+            }
+
+            // 10. 目錄抽屜列表
+            renderDrawerList();
+        }
+
+        function renderMokugyoDots(count, target) {
+            const container = document.getElementById("mokugyoDots");
+            const displayDots = Math.min(target, 21);
+            let html = "";
+            for (let i = 1; i <= displayDots; i++) {
+                const filled = i <= count;
+                html += `<span class="w-2.5 h-2.5 rounded-full transition-all ${filled ? 'bg-cinnabar scale-110' : 'bg-paper-border dark:bg-paper-darkBorder'}"></span>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function populateChapterSelect() {
+            const select = document.getElementById("chapterSelect");
+            select.innerHTML = SUTRA_CHAPTERS.map(c => {
+                const done = state.completedChapters.includes(c.id) ? " ✓" : "";
+                return `<option value="${c.id}">第${c.id}分 · ${c.title}${done}</option>`;
+            }).join("");
+        }
+
+        function renderDrawerList() {
+            const list = document.getElementById("drawerList");
+            list.innerHTML = SUTRA_CHAPTERS.map(c => {
+                const isCurrent = c.id === state.currentChapter;
+                const isDone = state.completedChapters.includes(c.id);
+                return `
+                    <button data-cid="${c.id}" class="drawer-chapter-btn w-full min-h-[46px] text-left px-3.5 py-2.5 rounded-xl flex items-center justify-between transition ${isCurrent ? 'bg-sandalwood text-white font-bold shadow-xs' : 'hover:bg-sandalwood/10 text-ink-light dark:text-ink-dark'}">
+                        <span class="font-serif text-base truncate pr-2">${c.title}</span>
+                        ${isDone ? `<span class="text-sm px-2 py-0.5 rounded-full ${isCurrent ? 'bg-white/20 text-white' : 'bg-emerald-700/15 text-emerald-700 dark:text-emerald-300'}">已背</span>` : ''}
+                    </button>
+                `;
+            }).join("");
+
+            list.querySelectorAll(".drawer-chapter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    switchChapter(Number(btn.dataset.cid));
+                    closeDrawer();
+                });
+            });
+        }
+
+        function switchChapter(id) {
+            const targetId = Math.max(1, Math.min(32, Number(id)));
+            if (targetId !== state.currentChapter) {
+                stopTTS();
+                state.currentChapter = targetId;
+                saveLocalState();
+                populateChapterSelect();
+                renderAll();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function handleTapMokugyo() {
+            playMokugyoSound();
+            triggerHaptic(28);
+
+            const desktopBtn = document.getElementById("tapMokugyoBtn");
+            desktopBtn.classList.remove("mokugyo-active");
+            void desktopBtn.offsetWidth;
+            desktopBtn.classList.add("mokugyo-active");
+
+            const ripple = document.getElementById("mokugyoRipple");
+            ripple.classList.remove("mokugyo-ripple");
+            void ripple.offsetWidth;
+            ripple.classList.add("mokugyo-ripple");
+
+            const cid = state.currentChapter;
+            state.mokugyoCounts[cid] = (state.mokugyoCounts[cid] || 0) + 1;
+            saveLocalState();
+            renderAll();
+
+            const newCount = state.mokugyoCounts[cid];
+            if (newCount === Number(state.mokugyoTarget)) {
+                triggerHaptic([40, 60, 40]);
+                showToast(`🎉 已圓滿完成今日 ${newCount} 遍誦讀目標！`);
+            }
+        }
+
+        function handleCheckIn() {
+            const cid = state.currentChapter;
+            const idx = state.completedChapters.indexOf(cid);
+
+            if (idx !== -1) {
+                state.completedChapters.splice(idx, 1);
+                saveLocalState();
+                populateChapterSelect();
+                renderAll();
+                showToast("已取消本分熟背標記");
+            } else {
+                state.completedChapters.push(cid);
+                const today = getTodayStr();
+                const yesterday = getYesterdayStr();
+
+                if (state.lastCheckInDate !== today) {
+                    if (state.lastCheckInDate === yesterday) {
+                        state.streak += 1;
+                    } else {
+                        state.streak = 1;
+                    }
+                    state.lastCheckInDate = today;
+                }
+
+                saveLocalState();
+                populateChapterSelect();
+                renderAll();
+                playZenBellSound();
+                triggerHaptic([50, 80, 100]);
+
+                const chapter = SUTRA_CHAPTERS.find(c => c.id === cid);
+                document.getElementById("modalChapterName").textContent = `已圓滿背誦：${chapter.title}`;
+                const nextBtn = document.getElementById("modalNextChapterBtn");
+                nextBtn.textContent = cid >= 32 ? "三十二分全經圓滿 🎉" : "前往下一分 →";
+
+                const modal = document.getElementById("celebrationModal");
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+            }
+        }
+
+        function openDrawer() {
+            document.getElementById("drawerBackdrop").classList.remove("hidden");
+            document.getElementById("chapterDrawer").classList.remove("-translate-x-full");
+        }
+        function closeDrawer() {
+            document.getElementById("drawerBackdrop").classList.add("hidden");
+            document.getElementById("chapterDrawer").classList.add("-translate-x-full");
+        }
+
+        // 初始化與綁定所有事件
+        window.addEventListener("DOMContentLoaded", () => {
+            setupPWAIcon();
+            loadLocalState();
+            populateChapterSelect();
+            renderAll();
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+            }
+
+            // 分品切換事件（頂部下拉選單、桌面左右箭頭、手機底部左右箭頭）
+            document.getElementById("chapterSelect").addEventListener("change", (e) => switchChapter(e.target.value));
+            document.getElementById("prevChapterBtn").addEventListener("click", () => switchChapter(state.currentChapter - 1));
+            document.getElementById("nextChapterBtn").addEventListener("click", () => switchChapter(state.currentChapter + 1));
+            document.getElementById("mobilePrevBtn").addEventListener("click", () => switchChapter(state.currentChapter - 1));
+            document.getElementById("mobileNextBtn").addEventListener("click", () => switchChapter(state.currentChapter + 1));
+
+            // 手機左右滑動手勢切換分品
+            const swipeArea = document.getElementById("sutraSwipeArea");
+            let touchStartX = 0;
+            let touchStartY = 0;
+            swipeArea.addEventListener("touchstart", (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+            swipeArea.addEventListener("touchend", (e) => {
+                const deltaX = e.changedTouches[0].screenX - touchStartX;
+                const deltaY = e.changedTouches[0].screenY - touchStartY;
+                if (Math.abs(deltaX) > 65 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                    if (deltaX < 0 && state.currentChapter < 32) {
+                        triggerHaptic(15);
+                        switchChapter(state.currentChapter + 1);
+                    } else if (deltaX > 0 && state.currentChapter > 1) {
+                        triggerHaptic(15);
+                        switchChapter(state.currentChapter - 1);
+                    }
+                }
+            }, { passive: true });
+
+            // 目錄抽屜事件
+            document.getElementById("openDrawerBtn").addEventListener("click", openDrawer);
+            document.getElementById("closeDrawerBtn").addEventListener("click", closeDrawer);
+            document.getElementById("drawerBackdrop").addEventListener("click", closeDrawer);
+
+            // 字體大小與護眼模式
+            document.getElementById("fontSizeBtn").addEventListener("click", () => {
+                state.fontSizeIndex = (state.fontSizeIndex + 1) % FONT_CLASSES.length;
+                saveLocalState();
+                renderAll();
+            });
+            document.getElementById("themeToggleBtn").addEventListener("click", () => {
+                state.darkMode = !state.darkMode;
+                saveLocalState();
+                renderAll();
+            });
+
+            // 三階段模式切換
+            document.querySelectorAll(".mode-tab").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.mode = btn.dataset.mode;
+                    renderAll();
+                });
+            });
+
+            // 挖空模式控制項
+            document.querySelectorAll(".density-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.clozeDensity = parseFloat(btn.dataset.density);
+                    renderAll();
+                });
+            });
+            document.getElementById("reRollClozeBtn").addEventListener("click", () => {
+                state.clozeSeed += 1;
+                renderAll();
+                showToast("已重新隨機挖空題目");
+            });
+            document.getElementById("revealAllClozeBtn").addEventListener("click", () => {
+                document.querySelectorAll(".cloze-blank").forEach(el => el.classList.add("revealed"));
+            });
+            document.getElementById("hideAllClozeBtn").addEventListener("click", () => {
+                document.querySelectorAll(".cloze-blank").forEach(el => el.classList.remove("revealed"));
+            });
+
+            // 首字提示控制項
+            document.getElementById("expandAllSentencesBtn").addEventListener("click", () => {
+                document.querySelectorAll(".sentence-block").forEach(el => el.classList.add("expanded"));
+            });
+            document.getElementById("collapseAllSentencesBtn").addEventListener("click", () => {
+                document.querySelectorAll(".sentence-block").forEach(el => el.classList.remove("expanded"));
+            });
+
+            // 語音朗讀控制項
+            document.getElementById("ttsPlayBtn").addEventListener("click", () => {
+                isSpeaking ? stopTTS() : startTTS();
+            });
+            document.getElementById("ttsStopBtn").addEventListener("click", stopTTS);
+            document.querySelectorAll(".rate-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.ttsRate = parseFloat(btn.dataset.rate);
+                    renderAll();
+                    if (isSpeaking) startTTS();
+                });
+            });
+            document.getElementById("ttsLoopBtn").addEventListener("click", () => {
+                state.ttsLoop = !state.ttsLoop;
+                renderAll();
+            });
+
+            // 木魚敲擊（桌面按鈕、手機底部按鈕、空白鍵）
+            document.getElementById("tapMokugyoBtn").addEventListener("click", handleTapMokugyo);
+            document.getElementById("mobileMokugyoBtn").addEventListener("click", handleTapMokugyo);
+            document.addEventListener("keydown", (e) => {
+                if (e.code === "Space" && document.activeElement.tagName !== "TEXTAREA" && document.activeElement.tagName !== "INPUT") {
+                    e.preventDefault();
+                    handleTapMokugyo();
+                }
+            });
+
+            document.getElementById("mokugyoTarget").addEventListener("change", (e) => {
+                state.mokugyoTarget = Number(e.target.value);
+                saveLocalState();
+                renderAll();
+            });
+            document.getElementById("resetMokugyoBtn").addEventListener("click", () => {
+                state.mokugyoCounts[state.currentChapter] = 0;
+                saveLocalState();
+                renderAll();
+                showToast("已歸零本分木魚計數");
+            });
+
+            // 每日背誦完成打卡（桌面與手機底部按鈕）
+            document.getElementById("checkInBtn").addEventListener("click", handleCheckIn);
+            document.getElementById("mobileCheckInBtn").addEventListener("click", handleCheckIn);
+
+            // 祝賀彈窗按鈕
+            document.getElementById("closeModalBtn").addEventListener("click", () => {
+                const modal = document.getElementById("celebrationModal");
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            });
+            document.getElementById("modalNextChapterBtn").addEventListener("click", () => {
+                const modal = document.getElementById("celebrationModal");
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+                if (state.currentChapter < 32) {
+                    switchChapter(state.currentChapter + 1);
+                } else {
+                    showToast("恭喜您已完成金剛經全部三十二分背誦！");
+                }
+            });
+
+            // 本機紀錄與備份碼彈窗
+            document.getElementById("backupModalBtn").addEventListener("click", () => {
+                updateBackupModalInfo();
+                const modal = document.getElementById("backupModal");
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+            });
+            document.getElementById("closeBackupModalBtn").addEventListener("click", () => {
+                const modal = document.getElementById("backupModal");
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            });
+            document.getElementById("copyBackupCodeBtn").addEventListener("click", () => {
+                const input = document.getElementById("exportCodeInput");
+                input.select();
+                document.execCommand("copy");
+                showToast("✓ 已複製進度備份碼，可傳送至新手機還原");
+            });
+            document.getElementById("restoreBackupCodeBtn").addEventListener("click", () => {
+                const val = document.getElementById("importCodeInput").value;
+                if (applyBackupCode(val)) {
+                    document.getElementById("importCodeInput").value = "";
+                }
+            });
+
+            // 加入手機主畫面教學彈窗
+            document.getElementById("pwaGuideBtn").addEventListener("click", () => {
+                const modal = document.getElementById("pwaGuideModal");
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+            });
+            const closePwa = () => {
+                const modal = document.getElementById("pwaGuideModal");
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            };
+            document.getElementById("closePwaModalBtn").addEventListener("click", closePwa);
+            document.getElementById("confirmPwaModalBtn").addEventListener("click", closePwa);
+        });
+    </script>
+</body>
+</html>
