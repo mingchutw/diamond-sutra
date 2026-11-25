@@ -1084,18 +1084,9 @@
             updateTTSUI();
         }
 
-        function startTTS() {
-            if (!('speechSynthesis' in window)) {
-                showToast("您的瀏覽器不支援語音朗讀功能");
-                return;
-            }
-
-            window.speechSynthesis.cancel();
-            const chapter = SUTRA_CHAPTERS.find(c => c.id === state.currentChapter);
-            if (!chapter) return;
-
-            // 僅在語音引擎發音時映射佛門古音（畫面經文維持正統繁體漢字不變）
-            let speakText = `${chapter.title}。${chapter.text}`
+        // 僅在語音引擎發音時映射佛門古音（畫面經文維持正統繁體漢字不變）
+        function applyPronunciation(text) {
+            return text
                 .replace(/樂阿蘭那行/g, "藥阿蘭挪橫")
                 .replace(/果不/g, "國否")
                 .replace(/最為第一/g, "最圍第一")
@@ -1174,38 +1165,94 @@
                 .replace(/偈/g, "計")
                 .replace(/不。/g, "否。")
                 .replace(/不？/g, "否？");
+        }
 
-            const utterance = new SpeechSynthesisUtterance(speakText);
-            utterance.lang = 'zh-TW';
-            utterance.rate = state.ttsRate;
-            utterance.pitch = 0.95;
+        // 全文閱讀：依句號切成適當長度的小段，逐段朗讀，避免長文被手機中途截斷
+        function splitForSpeech(text, maxLen = 120) {
+            const sentences = text.match(/[^。？！]+[。？！]*/g) || [text];
+            const parts = [];
+            let buf = "";
+            sentences.forEach(sent => {
+                if (buf && (buf + sent).length > maxLen) {
+                    parts.push(buf);
+                    buf = "";
+                }
+                buf += sent;
+            });
+            if (buf) parts.push(buf);
+            return parts;
+        }
+
+        let ttsSession = 0;
+        let ttsSegIndex = 0;
+
+        function startTTS(resume = false) {
+            if (!('speechSynthesis' in window)) {
+                showToast("您的瀏覽器不支援語音朗讀功能");
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            let segments;
+            if (state.mode === "full") {
+                // 全文閱讀：連續唸出三十二分全部經文，不唸各分名稱
+                segments = [];
+                SUTRA_CHAPTERS.forEach(c => segments.push(...splitForSpeech(applyPronunciation(c.text))));
+            } else {
+                const chapter = SUTRA_CHAPTERS.find(c => c.id === state.currentChapter);
+                if (!chapter) return;
+                segments = [applyPronunciation(`${chapter.title}。${chapter.text}`)];
+            }
+
+            const session = ++ttsSession;
+            ttsSegIndex = resume && ttsSegIndex < segments.length ? ttsSegIndex : 0;
+            isSpeaking = true;
+            updateTTSUI();
 
             const voices = window.speechSynthesis.getVoices();
             const twVoice = voices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh_TW'));
-            if (twVoice) utterance.voice = twVoice;
 
-            utterance.onstart = () => {
-                isSpeaking = true;
-                updateTTSUI();
-            };
+            const speakSegment = () => {
+                if (session !== ttsSession || !isSpeaking) return;
 
-            utterance.onend = () => {
-                if (state.ttsLoop && isSpeaking) {
-                    setTimeout(() => {
-                        if (state.ttsLoop && isSpeaking) startTTS();
-                    }, 800);
-                } else {
+                if (ttsSegIndex >= segments.length) {
+                    if (state.ttsLoop) {
+                        setTimeout(() => {
+                            if (session === ttsSession && state.ttsLoop && isSpeaking) {
+                                ttsSegIndex = 0;
+                                speakSegment();
+                            }
+                        }, 800);
+                    } else {
+                        isSpeaking = false;
+                        updateTTSUI();
+                    }
+                    return;
+                }
+
+                const utterance = new SpeechSynthesisUtterance(segments[ttsSegIndex]);
+                utterance.lang = 'zh-TW';
+                utterance.rate = state.ttsRate;
+                utterance.pitch = 0.95;
+                if (twVoice) utterance.voice = twVoice;
+
+                utterance.onend = () => {
+                    if (session !== ttsSession) return;
+                    ttsSegIndex += 1;
+                    speakSegment();
+                };
+
+                utterance.onerror = () => {
+                    if (session !== ttsSession) return;
                     isSpeaking = false;
                     updateTTSUI();
-                }
+                };
+
+                window.speechSynthesis.speak(utterance);
             };
 
-            utterance.onerror = () => {
-                isSpeaking = false;
-                updateTTSUI();
-            };
-
-            window.speechSynthesis.speak(utterance);
+            speakSegment();
         }
 
         function updateTTSUI() {
@@ -1614,7 +1661,7 @@
                 btn.addEventListener("click", () => {
                     state.ttsRate = parseFloat(btn.dataset.rate);
                     renderAll();
-                    if (isSpeaking) startTTS();
+                    if (isSpeaking) startTTS(true);
                 });
             });
             document.getElementById("ttsLoopBtn").addEventListener("click", () => {
